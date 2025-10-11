@@ -1,0 +1,25 @@
+{
+  "author": "fileformat@gmail.com",
+  "description": "VectorLogoZone Reports",
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.9"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "report",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "type": "commonjs",
+  "version": "1.0.0",
+  "dependencies": {
+    "@types/tabulator-tables": "^6.2.11",
+    "bootstrap": "^5.3.8",
+    "tabulator-tables": "^6.3.1"
+  }
+}
