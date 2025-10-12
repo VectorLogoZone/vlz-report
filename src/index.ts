@@ -1,8 +1,21 @@
-import './styles.css';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import '../node_modules/tabulator-tables/dist/css/tabulator_bootstrap5.min.css';
+import "./styles.css";
+import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "../node_modules/tabulator-tables/dist/css/tabulator_bootstrap5.min.css";
 
-import { CellComponent, EditModule, FilterModule, FormatModule, InteractionModule, PopupModule, ResizeColumnsModule, ResizeTableModule, ResponsiveLayoutModule, SortModule, Tabulator, TooltipModule } from 'tabulator-tables';
+import {
+	CellComponent,
+	EditModule,
+	FilterModule,
+	FormatModule,
+	InteractionModule,
+	PopupModule,
+	ResizeColumnsModule,
+	ResizeTableModule,
+	ResponsiveLayoutModule,
+	SortModule,
+	Tabulator,
+	TooltipModule,
+} from "tabulator-tables";
 
 type logoDataType = {
 	logohandle: string;
@@ -12,6 +25,8 @@ type logoDataType = {
 	ar21: boolean;
 	icon: boolean;
 	tile: boolean;
+	wikipedia?: string;
+	guide?: string;
 	tags: Map<string, string>;
 
 	// social fields
@@ -19,27 +34,25 @@ type logoDataType = {
 
 type SocialMedia = {
 	id: string;
-  	iconhtml: string;
-  	logohandle: string;
-  	pattern: string;
-}
+	iconhtml: string;
+	logohandle: string;
+	pattern: string;
+};
 
 type SocialMediaApi = {
 	success: boolean;
-	data: { sites: SocialMedia[]; };
-}
+	data: { sites: SocialMedia[] };
+};
 
-const dataUrl = "https://www.vectorlogo.zone/util/apiall.json";  // for local testing
-
+const dataUrl = "https://www.vectorlogo.zone/util/apiall.json"; // for local testing
 
 var rowPopupFormatter = function (e: any, row: any, onRendered: any) {
 	var data = row.getData() as logoDataType;
 	var container = document.createElement("div"),
-
 		contents = "<strong style='font-size:1.2em;'>SQL INSERT</strong><br/>";
 	contents += `<pre class="m-3">`;
-	contents += data.logohandle;    // LATER: logo image
-	contents += `</pre>`
+	contents += data.logohandle; // LATER: logo image
+	contents += `</pre>`;
 
 	container.innerHTML = contents;
 
@@ -66,8 +79,7 @@ function websiteLabeler(cell: any) {
 	return value;
 }
 
-function imgTooltipFn(imgType:string) {
-
+function imgTooltipFn(imgType: string) {
 	return function (e: MouseEvent, cell: CellComponent, onRendered: any) {
 		var value = cell.getValue();
 		if (!value) {
@@ -78,14 +90,13 @@ function imgTooltipFn(imgType:string) {
 
 		const el = document.createElement("img");
 		el.src = `https://www.vectorlogo.zone/logos/${handle}/${handle}-${imgType}.svg`;
-		el.style.height = "256px"
+		el.style.height = "256px";
 
 		return el;
-	}
+	};
 }
 
-function imgClickFn(imgType:string, extraParams:string) {
-
+function imgClickFn(imgType: string, extraParams: string) {
 	return function (e: UIEvent, cell: CellComponent) {
 		var value = cell.getValue();
 		if (!value) {
@@ -95,17 +106,16 @@ function imgClickFn(imgType:string, extraParams:string) {
 		const handle = cell.getRow().getCell("logohandle").getValue();
 
 		const url = `https://svg-viewer.fileformat.info/view.html?url=https://www.vectorlogo.zone/logos/${handle}/${handle}-${imgType}.svg&backUrl=https://www.vectorlogo.zone/logos/${handle}/${extraParams}`;
-		window.open(url, '_blank')?.focus();
-	}
+		window.open(url, "_blank")?.focus();
+	};
 }
 
 function showError(msg: string) {
 	console.log(`ERROR: ${msg}`);
-	document.getElementById('loading')!.classList.add('d-none');
-	document.getElementById('errdiv')!.classList.remove('d-none');
-	document.getElementById('errmsg')!.innerHTML = msg;
+	document.getElementById("loading")!.classList.add("d-none");
+	document.getElementById("errdiv")!.classList.remove("d-none");
+	document.getElementById("errmsg")!.innerHTML = msg;
 }
-
 
 function hasImage(suffix: string, images?: string[]) {
 	if (!images || images.length === 0) {
@@ -134,13 +144,41 @@ function tagFormatter(cell: CellComponent) {
 		const value = tags.get(key) || "";
 		var el = document.createElement("a");
 		el.href = value;
-		el.className = "badge bg-secondary me-1 mb-1 text-decoration-none";
+		el.className = "badge border border-primary text-primary me-1 mb-1 text-decoration-none";
 		el.target = "_blank";
 		el.textContent = key;
 		container.appendChild(el);
 	}
 
 	return container;
+}
+
+const tickElement = `<svg enable-background="new 0 0 24 24" height="14" width="14" viewBox="0 0 24 24" xml:space="preserve"><path fill="#2DC214" clip-rule="evenodd" d="M21.652,3.211c-0.293-0.295-0.77-0.295-1.061,0L9.41,14.34  c-0.293,0.297-0.771,0.297-1.062,0L3.449,9.351C3.304,9.203,3.114,9.13,2.923,9.129C2.73,9.128,2.534,9.201,2.387,9.351  l-2.165,1.946C0.078,11.445,0,11.63,0,11.823c0,0.194,0.078,0.397,0.223,0.544l4.94,5.184c0.292,0.296,0.771,0.776,1.062,1.07  l2.124,2.141c0.292,0.293,0.769,0.293,1.062,0l14.366-14.34c0.293-0.294,0.293-0.777,0-1.071L21.652,3.211z" fill-rule="evenodd"></path></svg>`;
+
+function tickLinkFormatter(cell: CellComponent) {
+	const value = cell.getValue() as string;
+	if (!value) {
+		return "";
+	}
+	var el = document.createElement("a");
+	el.href = value;
+	el.target = "_blank";
+	el.innerHTML = tickElement;
+	return el;
+}
+
+function tickLinkFilter(
+	headerValue: boolean,
+	rowValue: string,
+	rowData: any,
+	filterParams: any
+) {
+	if (headerValue === true) {
+		return rowValue && rowValue.length > 0;
+	} else if (headerValue === false) {
+		return !rowValue || rowValue.length === 0;
+	}
+	return true; // null case
 }
 
 function makeTagMap(row: any, socialmedia: SocialMedia[]): Map<string, string> {
@@ -157,7 +195,12 @@ function makeTagMap(row: any, socialmedia: SocialMedia[]): Map<string, string> {
 	return tagMap;
 }
 
-function nameFilter(headerValue: string, sortValue: string, rowData: any, filterParams: any) {
+function nameFilter(
+	headerValue: string,
+	sortValue: string,
+	rowData: any,
+	filterParams: any
+) {
 	if (!headerValue) return true;
 	if (!sortValue) return false;
 
@@ -193,15 +236,19 @@ function nameFilter(headerValue: string, sortValue: string, rowData: any, filter
 }
 
 async function main() {
-
 	let socialmedia: SocialMedia[];
 	try {
-		const resp = await fetch("https://www.vectorlogo.zone/util/socialmedia.json", {
-			method: 'GET',
-			redirect: 'follow',
-		});
+		const resp = await fetch(
+			"https://www.vectorlogo.zone/util/socialmedia.json",
+			{
+				method: "GET",
+				redirect: "follow",
+			}
+		);
 		if (!resp.ok) {
-			showError(`HTTP Error fetching social media data: ${resp.status} ${resp.statusText}`);
+			showError(
+				`HTTP Error fetching social media data: ${resp.status} ${resp.statusText}`
+			);
 			return;
 		}
 		var apiData = (await resp.json()) as SocialMediaApi;
@@ -218,11 +265,13 @@ async function main() {
 	let rawData: any;
 	try {
 		const resp = await fetch(dataUrl, {
-			method: 'GET',
-			redirect: 'follow',
+			method: "GET",
+			redirect: "follow",
 		});
 		if (!resp.ok) {
-			showError(`HTTP Error fetching logo data: ${resp.status} ${resp.statusText}`);
+			showError(
+				`HTTP Error fetching logo data: ${resp.status} ${resp.statusText}`
+			);
 			return;
 		}
 		rawData = await resp.json();
@@ -246,11 +295,24 @@ async function main() {
 			ar21: hasImage("-ar21.svg", row.images),
 			icon: hasImage("-icon.svg", row.images),
 			tile: hasImage("-tile.svg", row.images),
+			wikipedia: row.wikipedia,
+			guide: row.guide,
 			tags: makeTagMap(row, socialmedia),
 		});
 	}
 
-	Tabulator.registerModule([EditModule, FilterModule, FormatModule, InteractionModule, PopupModule, ResizeColumnsModule, ResizeTableModule, ResponsiveLayoutModule, SortModule, TooltipModule]);
+	Tabulator.registerModule([
+		EditModule,
+		FilterModule,
+		FormatModule,
+		InteractionModule,
+		PopupModule,
+		ResizeColumnsModule,
+		ResizeTableModule,
+		ResponsiveLayoutModule,
+		SortModule,
+		TooltipModule,
+	]);
 
 	const table = new Tabulator("#achtable", {
 		autoResize: true,
@@ -301,8 +363,44 @@ async function main() {
 				headerHozAlign: "center",
 				headerSort: false,
 				responsive: 2,
-				title: "2:1",
+				title: "Tile",
 				tooltip: imgTooltipFn("tile"),
+				width: 100,
+			},
+			{
+				cellDblClick: imgClickFn("ar21", "&zoom=4"),
+				field: "wikipedia",
+				formatter: tickLinkFormatter,
+				formatterParams: {
+					crossElement: false,
+				},
+				hozAlign: "center",
+				headerFilter: "tickCross",
+				headerFilterFunc: tickLinkFilter,
+				headerFilterParams: { defaultValue: "true", tristate: true },
+				headerHozAlign: "center",
+				headerSort: false,
+				responsive: 2,
+				title: "Wikipedia",
+				tooltip: (e, cell) => cell.getData().wikipedia || "n/a",
+				width: 100,
+			},
+			{
+				cellDblClick: imgClickFn("ar21", "&zoom=4"),
+				field: "guide",
+				formatter: tickLinkFormatter,
+				formatterParams: {
+					crossElement: false,
+				},
+				hozAlign: "center",
+				headerFilter: "tickCross",
+				headerFilterFunc: tickLinkFilter,
+				headerFilterParams: { defaultValue: "true", tristate: true },
+				headerHozAlign: "center",
+				headerSort: false,
+				responsive: 2,
+				title: "Guide",
+				tooltip: (e, cell) => cell.getData().guide || "n/a",
 				width: 100,
 			},
 			{
@@ -313,7 +411,8 @@ async function main() {
 					labelField: "name",
 					url: (cell) => {
 						var handle = cell.getData().logohandle;
-						return `https://www.vectorlogo.zone/logos/${handle}/`},
+						return `https://www.vectorlogo.zone/logos/${handle}/`;
+					},
 					target: "_blank",
 				},
 				headerFilter: "input",
@@ -333,7 +432,7 @@ async function main() {
 			},
 		],
 		height: "100%",
-		initialFilter: [{ field: "ar21", type: "=", value: true }],
+		initialHeaderFilter: [{ field: "ar21", type: "=", value: true }],
 		initialSort: [{ column: "sort", dir: "asc" }],
 		layout: "fitDataStretch",
 		placeholder: "No matches",
@@ -345,18 +444,17 @@ async function main() {
             </span>`,
 	});
 
-    table.on("dataFiltered", function(filters, rows) {
-        var el = document.getElementById('rowcount');
-        if (filters && filters.length > 0) {
-            el!.innerHTML = `Rows: ${rows.length.toLocaleString()} (of ${data.length.toLocaleString()})`;
-        } else {
-            el!.innerHTML = `Rows: ${data.length.toLocaleString()}`;
-        }
-    });
+	table.on("dataFiltered", function (filters, rows) {
+		var el = document.getElementById("rowcount");
+		if (filters && filters.length > 0) {
+			el!.innerHTML = `Rows: ${rows.length.toLocaleString()} (of ${data.length.toLocaleString()})`;
+		} else {
+			el!.innerHTML = `Rows: ${data.length.toLocaleString()}`;
+		}
+	});
 
-
-	document.getElementById('loading')!.style.display = 'none';
-	document.getElementById('achtable')!.style.display = 'block';
+	document.getElementById("loading")!.style.display = "none";
+	document.getElementById("achtable")!.style.display = "block";
 }
 
 main();
