@@ -262,6 +262,8 @@ async function main() {
 		return;
 	}
 
+	socialmedia = socialmedia.filter((sm) => sm.id != "wikipedia");
+
 	let rawData: any;
 	try {
 		const resp = await fetch(dataUrl, {
